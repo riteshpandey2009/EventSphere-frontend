@@ -15,6 +15,8 @@ const buttonVariants = cva(
           "bg-[#E65100] text-white hover:bg-[#D84315] shadow-sm active:scale-[0.98]",
         secondary:
           "bg-[#F2F1EC] hover:bg-[#E7E5DC] text-[#222] border border-[#DDD9CE] active:scale-[0.98]",
+        tertiary:
+          "bg-[#E7E5DC] text-stone-600 border border-[#DDD9CE] hover:bg-[#000000] hover:text-white shadow-sm active:scale-[0.98]",
         ghost:
           "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         destructive:
