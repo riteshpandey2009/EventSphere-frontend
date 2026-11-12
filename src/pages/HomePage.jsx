@@ -1,11 +1,32 @@
 import FeaturedCarousel from "@/components/FeaturedCarousel";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 import { ChevronRight, Compass, Flame, Sparkles } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router";
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
+
+  const [featuredEvent, setFeaturedEvent] = useState([]);
+
+  useEffect(() => {
+    async function getFeaturedEvents() {
+      setIsLoading(true);
+      try {
+        let {
+          data: { data },
+                } = await axios.get(
+          "https://eventsphere-server-mfdb.onrender.com/api/events/featured",
+        );
+        setFeaturedEvent(data);
+      } catch (error) {
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    getFeaturedEvents();
+  }, []);
 
   return (
     <div className="w-full">
@@ -62,9 +83,10 @@ export default function HomePage() {
         {isLoading ? (
           <div className="aspect-21/9 rounded-3xl bg-[#EBE8DF] animate-pulse" />
         ) : (
-          <FeaturedCarousel />
+          <FeaturedCarousel events={featuredEvent} />
         )}
       </section>
+     
     </div>
   );
 }

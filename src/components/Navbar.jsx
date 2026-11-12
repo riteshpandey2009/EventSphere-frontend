@@ -15,9 +15,8 @@ import { useState } from "react";
 
 function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  console.log(isMobileMenuOpen);
   return (
-    <div className="sticky top-0 z-40 w-full bg-[#FAF9F5]/90 backdrop-blur-md border-b border-[#EBE8DF]">
+    <div className="fixed top-0 z-40 w-full bg-[#FAF9F5]/90 backdrop-blur-md border-b border-[#EBE8DF]">
       <div className="max-w-7xl mx-auto flex flex-row items-center justify-between h-18 px-4 sm:px-6 md:px-8 lg:px-10">
         <div className="flex gap-8 items-center">
           <Link to="/" className="flex items-center gap-2 group">
@@ -149,7 +148,9 @@ function Navbar() {
           </Link>
 
         </div>
-      )}
+      )} 
+
+     
     </div>
   );
 }

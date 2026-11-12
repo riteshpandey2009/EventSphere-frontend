@@ -1,34 +1,167 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
+import {
+  ArrowRight,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Sparkles,
+} from "lucide-react";
+import { Badge } from "./ui/badge";
+import { Link } from "react-router";
+import { Button } from "./ui/button";
 
-function FeaturedCarousel() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false }, [Autoplay()]);
+function FeaturedCarousel({ events }) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
+    Autoplay({
+      delay: 3000,
+      stopOnInteraction: false,
+      stopOnMouseEnter: true,
+      rootNode: (emblaRoot) => emblaRoot.parentElement,
+    }),
+  ]);
 
-  const goToPrev = () => emblaApi?.scrollPrev();
-  const goToNext = () => emblaApi?.scrollNext();
+  const goToPrev = () => {
+    emblaApi?.scrollPrev();
+    emblaApi.plugins().autoplay.reset();
+  };
+  const goToNext = () => {
+    emblaApi?.scrollNext();
+    emblaApi.plugins().autoplay.reset();
+  };
 
   useEffect(() => {
     if (!emblaApi) return;
-    emblaApi.plugins().autoplay?.play();
+    emblaApi.on("select", () => setSelectedIndex(emblaApi.selectedScrollSnap()));
   }, [emblaApi]);
 
   return (
-    <div className="embla">
-      <div className="embla__viewport" ref={emblaRef}>
-        <div className="embla__container">
-          <div className="embla__slide">Slide 1</div>
-          <div className="embla__slide">Slide 2</div>
-          <div className="embla__slide">Slide 3</div>
+    <div className="relative group">
+      <div className="overflow-hidden rounded-3xl" ref={emblaRef}>
+        <div className="flex">
+          {events.map((event) => {
+            const eventId = event._id || event.id;
+            return (
+              <div
+                key={eventId}
+                className="flex-[0_0_100%] min-w-0 relative aspect-video md:aspect-21/9 lg:aspect-24/9 max-h-125"
+              >
+                <div className="absolute inset-0 bg-[#161513]">
+                  <img
+                    src={event.image}
+                    alt={event.title}
+                    className="w-full h-full object-cover opacity-60 mix-blend-luminosity brightness-95"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-[#141312] via-[#141312] to-transparent " />
+                  <div className="absolute inset-0 bg-linear-to-t from-[#141312] via-[#141312] to-transparent " />
+                </div>
+                <div className="relative h-full flex flex-col justify-end p-6 sm:p-10 lg:p-12 text-white max-w-3xl z-10">
+                  <div className="space-y-2 ">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#E65100] text-white shadow-sm">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        Featured Spotlight
+                      </span>
+                      {event.category?.name && (
+                        <Badge
+                          variant="outline"
+                          size="sm"
+                          className="text-stone-200 border-white/20 bg-white/10 backdrop-blur-sm"
+                        >
+                          {event.category.name}
+                        </Badge>
+                      )}
+                      <Badge size="sm" className="border-white">
+                        {event.format === "online"
+                          ? "Online"
+                          : event.format === "hybrid"
+                            ? "Hybrid"
+                            : "In-Person"}
+                      </Badge>
+                    </div>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
+                      <Link
+                        to={`/events/${event.slug || eventId}`}
+                        className="hover:underline underline-offset-4 decoration-[#E65100]"
+                      >
+                        {event.title}
+                      </Link>
+                    </h2>
+                    <p className="text-sm sm:text-base text-stone-300 line-clamp-2 max-w-2xl font-normal leading-relaxed">
+                      {event.description}
+                    </p>
+
+                    <div className="flex items-center gap-5 pt-2 text-xs sm:text-sm text-stone-300 font-medium flex-wrap">
+                      <span className="flex items-center gap-1.5 text-orange-300 font-semibold">
+                        <Calendar className="w-4 h-4" />
+                        {/* {formatEventDate(event.startDate)} */}
+                        {event.startDate}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-stone-300">
+                        <MapPin className="w-4 h-4 text-stone-400" />
+                        {event.venue}, {event.city}
+                      </span>
+                      <span className="flex items-center gap-1.5 font-bold text-white bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
+                        {/* {formatPrice(event.price, event.currency)} */}
+                        {event.price}
+                      </span>
+                    </div>
+                    <div className="pt-3 flex items-center gap-3">
+                      <Link to={`/events/${event.slug || eventId}`}>
+                        <Button
+                          variant="primary"
+                          size="md"
+                          className="gap-2 shadow-lg"
+                        >
+                          <span>Explore Experience</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                      {
+                        <Button
+                          variant="secondary"
+                          size="md"
+                          className="bg-white/20 border-white/30 text-white hover:bg-white/30 backdrop-blur-sm"
+                        >
+                          Quick Register
+                        </Button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      <button className="embla__prev" onClick={goToPrev}>
-        Scroll to prev
+      <button
+        onClick={goToPrev}
+        aria-label="Previous slide"
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/80 hover:bg-white text-stone-800 shadow-md flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-20 cursor-pointer backdrop-blur-sm"
+      >
+        <ChevronLeft className="w-6-h-6" />
       </button>
-      <button className="embla__next" onClick={goToNext}>
-        Scroll to next
+
+      <button
+        onClick={goToNext}
+        aria-label="Next slide"
+        className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/80 hover:bg-white text-stone-800 shadow-md flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-20 cursor-pointer backdrop-blur-sm"
+      >
+        <ChevronRight className="w-6-h-6" />
       </button>
+
+      <div className="absolute bottom-4 right-6 flex gap-2 z-20">
+        {events.map((_, index) => (
+          <button
+            key={index}
+            className={`transition-all rounded-full ${index === selectedIndex ? "w-6 h-2 bg-[#E65100]" : "w-2 h-2 bg-white/50 hover:bg-white/80"} `}
+          />
+        ))}
+      </div>
     </div>
   );
 }
