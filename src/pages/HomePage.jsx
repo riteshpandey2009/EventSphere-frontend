@@ -16,7 +16,7 @@ export default function HomePage() {
       try {
         let {
           data: { data },
-                } = await axios.get(
+        } = await axios.get(
           "https://eventsphere-server-mfdb.onrender.com/api/events/featured",
         );
         setFeaturedEvent(data);
@@ -86,7 +86,11 @@ export default function HomePage() {
           <FeaturedCarousel events={featuredEvent} />
         )}
       </section>
-     
+
+      <section className="max-w-7xl mx-auto px-4 pt-7 sm:px-6 lg:px-8">
+        <h2></h2>
+      </section>
     </div>
   );
 }
+
