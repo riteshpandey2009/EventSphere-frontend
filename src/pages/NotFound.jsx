@@ -4,7 +4,7 @@ import { Compass, House } from "lucide-react";
 import { Button } from "@/components/ui/button";
 function NotFound() {
   return (
-    <div className="min-h-[60vh] bg-white w-full max-w-sm lg:max-w-xl md:max-w-lg sm:max-w-md my-12 mx-auto flex items-center justify-center flex-wrap text-center border-2 border-stone-200 rounded-4xl">
+    <div className="min-h-[60vh] bg-white overflow-x-hidden w-full max-w-sm lg:max-w-xl md:max-w-lg sm:max-w-md my-30 mx-auto flex items-center justify-center flex-wrap text-center border-2 border-stone-200 rounded-4xl">
       <section className="">
         <p className="text-stone-300 text-8xl font-extrabold font-mono pb-3 ">
           404
