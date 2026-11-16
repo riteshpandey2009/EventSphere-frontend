@@ -91,18 +91,16 @@ function Navbar() {
               <Search className="w-5 h-5" />
             </button>
           </Link>
-          <Link to="/explore">
-            <button
-              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-              className="p-2 rounded-xl text-stone-700 hover:bg-black/5"
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-6 h6" />
-              ) : (
-                <Menu className="w-6 h6" />
-              )}
-            </button>
-          </Link>
+          <button
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            className="p-2 rounded-xl text-stone-700 hover:bg-black/5"
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-6 h6" />
+            ) : (
+              <Menu className="w-6 h6" />
+            )}
+          </button>
         </div>
       </div>
       {isMobileMenuOpen && (
@@ -146,11 +144,8 @@ function Navbar() {
           <Link className="mt-3 transition-all text-sm flex justify-center items-center gap-2 px-3 py-2 rounded-4xl hover:text-black bg-black/5 shadow-md">
             <span>Sign In & Sign Up - Coming Soon</span>
           </Link>
-
         </div>
-      )} 
-
-     
+      )}
     </div>
   );
 }
