@@ -9,9 +9,9 @@ import {
   MapPin,
   Sparkles,
 } from "lucide-react";
-import { Badge } from "./ui/badge";
+import { Badge } from "../ui/badge";
 import { Link } from "react-router";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { formatEventDate, formatPrice } from "@/lib/utils";
 
 function FeaturedCarousel({ events }) {
