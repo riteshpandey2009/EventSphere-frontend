@@ -1,30 +1,40 @@
-import { formatEventDate } from "@/lib/utils";
+import EventReviewSection from "@/components/events/EventReviewSection";
+import {
+  formatEventDate,
+  formatEventTimeRange,
+  formatPrice,
+  getDaysRemaining,
+} from "@/lib/utils";
 import axios from "axios";
 import {
   Bookmark,
   Calendar,
+  Check,
   ChevronLeft,
   Clock,
   MapPin,
   Send,
   Share2,
+  ShieldCheck,
   Sparkles,
   Star,
+  Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
+import { toast } from "sonner";
 
 const Modes = {
   "in-person": "In-person Gathering",
   online: "Online conclave",
-  hybird: "Hybird Format",
+  hybrid: "Hybrid Format",
 };
 
 export default function EventDetailsPage() {
   const { slug } = useParams();
   const [isLoading, setIsLoading] = useState(false);
-  const [event, setEvent] = useState([null]);
-  //   const [featuredEvent, setFeaturedEvent] = useState([]);
+  const [event, setEvent] = useState([]);
+    const [reviews, setreviews] = useState([]);
   //   const [trendingEvents, settrendingEvents] = useState([]);
 
   useEffect(() => {
@@ -37,11 +47,22 @@ export default function EventDetailsPage() {
           `https://eventsphere-server-mfdb.onrender.com/api/events/${slug}`,
         );
         setEvent(data);
+        let {
+          data: { data :reviews },
+        } = await axios.get(
+          `https://eventsphere-server-mfdb.onrender.com/api/events/${data?.id || data?._id}/reviews`,
+        );
+        setreviews(reviews);
       } catch (error) {}
       setIsLoading(false);
     }
     fetchEvent();
   }, []);
+
+  function handleShare() {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("Copied to the clipboard");
+  }
   if (isLoading) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-24 space-y-8 animate-pulse">
@@ -71,10 +92,14 @@ export default function EventDetailsPage() {
 
         <div className="flex items-center gap-2">
           <button
+            onClick={handleShare}
             type="button"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#DDD9CE] bg-white hover:bg-stone-50 text-xs font-medium text-stone-700 transition-all cursor-pointer"
           >
-            <Share2 className="w-4 h-4" />
+            <span>
+              {" "}
+              <Share2 className="w-4 h-4" />
+            </span>
             <span>Share</span>
           </button>
 
@@ -103,11 +128,6 @@ export default function EventDetailsPage() {
               {event?.category?.name}
             </span>
             <span className="inline-flex items-center gap-1.5 whitespace-nowrap bg-[#EBF3ED] text-[#245436] border border-[#CFE2D4] text-xs px-2.5 py-1 rounded-full font-medium capitalize">
-              {/* {event.format === "in-person"
-                ? "In-person Gathering"
-                : event.format === "online"
-                  ? "Online conclave"
-                  : "Hybird Format" */}
               {Modes[event.format]}
             </span>
             {event.featured && (
@@ -127,16 +147,14 @@ export default function EventDetailsPage() {
           <div className="flex items-center gap-4 text-xs sm:text-sm text-stone-200 pt-1 flex-wrap font-medium">
             <span className="flex items-center gap-1 text-orange-300 font-semibold">
               <Calendar className="w-4 h-4" />
-              <span>
-                {event?.startDate
-                  ? formatEventDate(event.startDate)
-                  : "Date TBD"}
-              </span>
+              <span>{formatEventDate(event.startDate)}</span>
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
-              <span>09:30 AM - 06:00 PM IST</span>
+              <span>
+                <Clock className="w-4 h-4" />
+              </span>
+              {formatEventTimeRange(event.startDate, event.endDate)}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
@@ -239,130 +257,7 @@ export default function EventDetailsPage() {
           </section>
 
           {/* Reviews section */}
-          <section className="bg-white rounded-3xl border border-[#EBE8DF] p-6 sm:p-8 shadow-subtle space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#F2EFE8]">
-              <div>
-                <h3 className="text-xl font-bold text-[#111]">
-                  Attendee Reviews & Experiences
-                </h3>
-                <p className="text-xs text-stone-500 mt-0.5">
-                  Real feedback from community members who joined this event
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1 text-[#E65100]">
-                  <span className="text-amber-500 text-lg">⭐</span>
-                  <span className="text-lg font-black text-stone-900">4.9</span>
-                </div>
-                <span className="text-xs text-stone-400 font-medium">
-                  (3 reviews)
-                </span>
-              </div>
-            </div>
-
-            {/* Review Submission Form */}
-            <form className="bg-[#FAF9F5] rounded-2xl p-4 sm:p-5 border border-[#EAE7DC] space-y-4">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <span className="text-xs font-bold text-stone-800">
-                  Rate your experience:
-                </span>
-                <div className="flex items-center gap-1 text-base text-amber-500 cursor-pointer">
-                  <Star className="w-4 h-4" />
-                  <Star className="w-4 h-4" />
-                  <Star className="w-4 h-4" />
-                  <Star className="w-4 h-4" />
-                  <Star className="w-4 h-4" />
-
-                  <span className="text-xs font-bold text-stone-700 ml-1.5">
-                    5 / 5
-                  </span>
-                </div>
-              </div>
-
-              <textarea
-                rows={3}
-                name="comment"
-                placeholder="Share how the venue, speakers, curation, or atmosphere resonated with you..."
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-white border border-[#DDD9CE] focus:border-[#E65100] outline-none text-stone-800"
-              />
-
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-xs font-medium px-3 py-1.5 bg-[#E65100] text-white hover:bg-[#D84315] shadow-sm"
-                >
-                  <Send className="w-4 h-4" />
-                  <span>Post Review</span>
-                </button>
-              </div>
-            </form>
-
-            {/* Reviews List */}
-            <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-white border border-[#F0ECE2] space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <img
-                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-                      alt="Pooja Sharma"
-                      className="w-7 h-7 rounded-full object-cover border border-[#DDD9CE]"
-                    />
-                    <div>
-                      <p className="text-xs font-bold text-stone-900 leading-none">
-                        Pooja Sharma
-                      </p>
-                      <p className="text-[10px] text-stone-400 mt-0.5">
-                        2 days ago
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-0.5 text-xs text-amber-400">
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                  </div>
-                </div>
-                <p className="text-xs text-stone-700 leading-relaxed pl-9">
-                  Exceptional architectural discussions on React Server
-                  Components! The live demos brought rare clarity.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-white border border-[#F0ECE2] space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <img
-                      src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80"
-                      alt="Aditya Menon"
-                      className="w-7 h-7 rounded-full object-cover border border-[#DDD9CE]"
-                    />
-                    <div>
-                      <p className="text-xs font-bold text-stone-900 leading-none">
-                        Aditya Menon
-                      </p>
-                      <p className="text-[10px] text-stone-400 mt-0.5">
-                        5 days ago
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-0.5 text-xs text-amber-400">
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                  </div>
-                </div>
-                <p className="text-xs text-stone-700 leading-relaxed pl-9">
-                  The venue at BIC Domlur was immaculate, sound engineering was
-                  spot on, and connecting with peers was invaluable.
-                </p>
-              </div>
-            </div>
-          </section>
+          <EventReviewSection reviews ={reviews} averageRating={event.averageRating} numReviews={event.numReviews}/>
         </div>
 
         {/* Right Column: Sticky Booking Ticket Card */}
@@ -374,13 +269,13 @@ export default function EventDetailsPage() {
                   Admission Pass
                 </span>
                 <div className="text-3xl font-extrabold text-stone-900 mt-0.5">
-                  ₹1,499
+                  {formatPrice(event.price, event.currency)}
                 </div>
               </div>
 
               <div className="text-right">
-                <span className="text-xs font-semibold px-2.5 py-1 bg-stone-100 text-stone-700 rounded-lg">
-                  11 days left
+                <span className="text-xs font-semibold px-2.5 py-1 bg-stone-100 text-stone-700 rounded-lg capitalize">
+                  {getDaysRemaining(event.startDate)}
                 </span>
               </div>
             </div>
@@ -389,17 +284,27 @@ export default function EventDetailsPage() {
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-stone-600">
                 <span className="flex items-center gap-1.5 font-medium">
-                  <span>👥</span> Capacity
+                  <span>
+                    <Users className="w-4 h-4" />
+                  </span>{" "}
+                  Capacity
                 </span>
                 <span className="font-bold text-stone-900">
-                  85 of 100 seats filled
+                  {event.registeredCount} of {event.capacity} seats filled
                 </span>
               </div>
               <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
-                <div className="h-full bg-[#E65100] rounded-full transition-all w-[80%]" />
+                <div
+                  className="h-full bg-[#E65100] rounded-full transition-all"
+                  style={{
+                    width: `${Math.round(
+                      (event?.registeredCount / event?.capacity) * 100,
+                    )}%`,
+                  }}
+                />
               </div>
               <p className="text-[11px] text-stone-400 text-right">
-                15 seats remaining
+                {event.capacity - event.registeredCount} seats remaining
               </p>
             </div>
 
@@ -416,20 +321,27 @@ export default function EventDetailsPage() {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium h-10 px-4 py-2 border border-[#CCC8BA] bg-transparent hover:bg-[#F2F1EC] text-[#222] w-full"
               >
-                <span>📅</span> Add to My Schedule
+                <span>
+                  <Calendar className="w-4 h-4" />
+                </span>
+                Add to My Schedule
               </button>
             </div>
 
             {/* Trust points */}
             <div className="pt-4 border-t border-[#F2EFE8] space-y-2 text-[11px] text-stone-500">
               <div className="flex items-center gap-2">
-                <span className="text-emerald-600">🛡️</span>
+                <span className="text-emerald-600">
+                  <ShieldCheck className="w-4 h-4" />
+                </span>
                 <span>
                   Verified organizer & authentic attendee review policy
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-stone-400">✓</span>
+                <span className="text-stone-400">
+                  <Check className="w-4 h-4" />
+                </span>
                 <span>Digital ticket QR sent to your email instantly</span>
               </div>
             </div>
