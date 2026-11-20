@@ -1,11 +1,11 @@
 import EventReviewSection from "@/components/events/EventReviewSection";
+import api from "@/lib/axios";
 import {
   formatEventDate,
   formatEventTimeRange,
   formatPrice,
   getDaysRemaining,
 } from "@/lib/utils";
-import axios from "axios";
 import {
   Bookmark,
   Calendar,
@@ -13,11 +13,9 @@ import {
   ChevronLeft,
   Clock,
   MapPin,
-  Send,
   Share2,
   ShieldCheck,
   Sparkles,
-  Star,
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -34,23 +32,18 @@ export default function EventDetailsPage() {
   const { slug } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [event, setEvent] = useState([]);
-    const [reviews, setreviews] = useState([]);
+  const [reviews, setreviews] = useState([]);
   //   const [trendingEvents, settrendingEvents] = useState([]);
 
   useEffect(() => {
     async function fetchEvent() {
       setIsLoading(true);
       try {
-        let {
-          data: { data },
-        } = await axios.get(
-          `https://eventsphere-server-mfdb.onrender.com/api/events/${slug}`,
-        );
+        let data = await api.get(`/api/events/${slug}`);
         setEvent(data);
-        let {
-          data: { data :reviews },
-        } = await axios.get(
-          `https://eventsphere-server-mfdb.onrender.com/api/events/${data?.id || data?._id}/reviews`,
+
+        let reviews = await api.get(
+          `/api/events/${data?.id || data?._id}/reviews`,
         );
         setreviews(reviews);
       } catch (error) {}
@@ -65,7 +58,7 @@ export default function EventDetailsPage() {
   }
   if (isLoading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-24 space-y-8 animate-pulse">
+      <div className="max-w-6xl mx-auto px-4 py-20 space-y-6 animate-pulse">
         <div className="h-8 w-40 bg-stone-200 rounded-lg" />
         <div className="aspect-21/9 bg-stone-200 rounded-3xl" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -80,7 +73,7 @@ export default function EventDetailsPage() {
     );
   }
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-8 pb-24">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-6 pb-24">
       <div className="flex items-center justify-between">
         <Link
           to="/explore"
@@ -257,7 +250,11 @@ export default function EventDetailsPage() {
           </section>
 
           {/* Reviews section */}
-          <EventReviewSection reviews ={reviews} averageRating={event.averageRating} numReviews={event.numReviews}/>
+          <EventReviewSection
+            reviews={reviews}
+            averageRating={event.averageRating}
+            numReviews={event.numReviews}
+          />
         </div>
 
         {/* Right Column: Sticky Booking Ticket Card */}

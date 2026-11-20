@@ -2,7 +2,7 @@ import Skeleton from "@/components/common/Skeleton";
 import EventCard from "@/components/events/EventCard";
 import FeaturedCarousel from "@/components/events/FeaturedCarousel";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
+import api from "@/lib/axios";
 import {
   ArrowRight,
   Briefcase,
@@ -112,26 +112,16 @@ export default function HomePage() {
     async function loadHomePage() {
       setIsLoading(true);
       try {
-        let {
-          data: { data },
-        } = await axios.get(
-          "https://eventsphere-server-mfdb.onrender.com/api/events/featured",
-        );
+        let data = await api.get("/api/events/featured");
         setFeaturedEvent(data);
       } catch (error) {}
       try {
-        let {
-          data: { data },
-        } = await axios.get(
-          "https://eventsphere-server-mfdb.onrender.com/api/categories",
-        );
-        setCategories(data);            
+        let data = await api.get("/api/categories");
+        setCategories(data);
       } catch (error) {}
       try {
-        let {
-          data: { data },
-        } = await axios.get(
-          "https://eventsphere-server-mfdb.onrender.com/api/events?limit=8&sort=startDate&order=asc",
+        let data = await api.get(
+          "/api/events?limit=8&sort=startDate&order=asc",
         );
         settrendingEvents(data);
       } catch (error) {}
