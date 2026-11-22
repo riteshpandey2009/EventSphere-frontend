@@ -2,6 +2,9 @@ import { Link } from "react-router";
 import { Button } from "../ui/button";
 import { Bookmark, Calendar1 } from "lucide-react";
 import { formatEventDate, formatPrice } from "@/lib/utils";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleFavorite } from "@/store/slices/favoriteSlice";
+import { toast } from "sonner";
 
 export default function EventCard({ event }) {
   const {
@@ -16,6 +19,15 @@ export default function EventCard({ event }) {
     slug,
     category: { name },
   } = event;
+
+  const dispatch = useDispatch();
+  const state = useSelector((state) => state);
+
+  function handlefavorite(e) {
+    e.preventDefault();
+    dispatch(toggleFavorite(event));
+  }
+
   return (
     <Link
       to={`/events/${slug}`}
@@ -35,6 +47,7 @@ export default function EventCard({ event }) {
             </span>
 
             <Button
+              onClick={handlefavorite}
               type="button"
               className="pointer-events-auto w-8 h-8 rounded-full bg-white/90 backdrop-blur-md shadow-sm border border-black/5 flex items-center justify-center hover:bg-white hover:scale-110 active:scale-95 transition-all text-stone-700 hover:text-stone-900 cursor-pointer text-xs"
             >

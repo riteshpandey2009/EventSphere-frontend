@@ -12,9 +12,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const favroites = useSelector((state) => state.favroites.items);
   return (
     <div className="fixed top-0 z-40 w-full bg-[#FAF9F5]/90 backdrop-blur-md border-b border-[#EBE8DF]">
       <div className="max-w-7xl mx-auto flex flex-row items-center justify-between h-18 px-4 sm:px-6 md:px-8 lg:px-10">
@@ -47,9 +49,16 @@ function Navbar() {
               <span>Schedule</span>
             </Link>
 
-            <Link className="transition-all flex items-center gap-2 px-3 py-2 rounded-4xl hover:text-black hover:bg-black/3 hover:shadow-md">
+            <Link className="transition-all flex items-center gap-2 px-3 py-2 rounded-4xl hover:text-black hover:bg-black/3 hover:shadow-md"
+            to="/favorites">
+
               <Bookmark className="w-4 h-4" />
               <span>Saved</span>
+              {favroites.length > 0 && (
+                <span className="w-5 h-5 rounded-full bg-orange-100 text-[#E65100] text-[11px] font-bold flex items-center justify-center">
+                  {favroites.length}
+                </span>
+              )}
             </Link>
 
             <Link className="transition-all flex items-center gap-2 px-3 py-2 rounded-4xl hover:text-black hover:bg-black/3 hover:shadow-md">
