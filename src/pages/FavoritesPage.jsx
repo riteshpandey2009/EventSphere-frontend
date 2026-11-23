@@ -1,11 +1,13 @@
 import EventCard from "@/components/events/EventCard";
 import { Button } from "@/components/ui/button";
+import { clearFavorites } from "@/store/slices/favoriteSlice";
 import { Bookmark } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router";
 
 export default function FavoritesPage() {
   const favroites = useSelector((state) => state.favroites.items);
+  const dispatch = useDispatch();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-8 pb-24">
@@ -20,13 +22,21 @@ export default function FavoritesPage() {
           </p>
         </div>
 
-        <Button
-          size="sm"
-          variant="outline"
-          className=" text-stone-500 hover:text-rose-600"
-        >
-          Clear All
-        </Button>
+        {favroites.length > 0 && (
+          <Button
+            size="sm"
+            variant="outline"
+            className=" text-stone-500 hover:text-rose-600"
+            onClick={() => {
+              if (window.confirm("Clear All The Saved Bookmarks")) {
+                dispatch(clearFavorites())
+              }
+              
+            }}
+          >
+            Clear All
+          </Button>
+        )}
       </div>
 
       {favroites.length === 0 ? (
