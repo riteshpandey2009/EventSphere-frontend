@@ -24,9 +24,14 @@ export default function EventCard({ event }) {
     category: { name },
   } = event;
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const state = useSelector((state) => state);
-
+  const isFavorite = useSelector((state) =>
+    state.favroites.items.some(
+      (e) => (e.id || e._id) === (event.id || event._id),
+    ),
+  );
+  console.log(isFavorite);
   return (
     <Link
       to={`/events/${slug}`}
@@ -50,7 +55,13 @@ export default function EventCard({ event }) {
               type="button"
               className="pointer-events-auto w-8 h-8 rounded-full bg-white/90 backdrop-blur-md shadow-sm border border-black/5 flex items-center justify-center hover:bg-white hover:scale-110 active:scale-95 transition-all text-stone-700 hover:text-stone-900 cursor-pointer text-xs"
             >
-              <Bookmark className="w-4 h-4" />
+              <Bookmark
+                className={`w-4 h-4 transition-colors ${
+                  isFavorite
+                    ? "fill-[#E65100] text-[#E65100]"
+                    : "text-stone-600"
+                }`}
+              />
             </Button>
           </div>
         </div>
